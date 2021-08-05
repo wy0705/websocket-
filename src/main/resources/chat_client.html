@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chat</title>
+    <script type="text/javascript">
+        var ws;
+        var url = "ws://localhost:9999/ws";
+        window.onload = connect;
+        var currentUsers = [];
+
+        function connect() {
+            if ('WebSocket' in window) {
+                //打开一个websocket
+                ws = new WebSocket(url);
+            } else if ('MozWebSocket' in window) {
+                ws = new MozWebSocket(url);
+            } else {
+                alert('该浏览器不支持websocket');
+                return;
+            }
+
+            ws.open = function () {//连接建立时触发
+
+            };
+
+            ws.onmessage = function (event) {//客户端接受服务端数据时触发
+                //接受的数据
+                eval("var result=" + event.data);
+                // //欢迎语言
+                // if (result.alert != undefined) {
+                //     document.getElementById("content").innerHTML += result.alert
+                //         + "<br/>";
+                // }
+                // //列表
+                // if (result.names != undefined) {
+                //     document.getElementById("userList").innerHTML = "";
+                //     var arr = result.names;
+                //     for (var i = 0; i < arr.length; i++) {
+                //         document.getElementById("userList").innerHTML += arr[i]
+                //             + "<br/>";
+                //     }
+                // }
+                //聊天内容
+                // if (result.from != undefined) {
+                var message = event.data;
+                switch (message.messageType) {
+                    case "USER_ADD":
+                        break;
+                    case "CHANGE_NAME":
+                        break;
+                    case "USER_LEAVE":
+                        break;
+                    case "CHAT_MSG":
+                        break;
+                    default:
+                        break;
+                }
+                document.getElementById("content").innerHTML += JSON.parse(event.data).content
+                    + "<br/>";
+                // }
+            };
+
+
+        }
+
+        function wsSend() {
+            var msg = document.getElementById("message");
+            var id = document.getElementById("channelId");
+            var rename=document.getElementById("rename");
+            if (rename==null){
+                //使用连接发送数据
+                ws.send(JSON.stringify({"id": id.value, "content": msg.value, "timestamp": new Date().getTime()}));
+                // msg.value = "";
+            }else {
+                ws.send(JSON.stringify({"id": id.value, "content": msg.value,"rename": rename.value, "timestamp": new Date().getTime()}));
+            }
+
+        }
+        /*function reName() {
+            var name=document.getElementById("rename");
+            //ws.send(JSON.stringify({"id":}))
+
+        }*/
+    </script>
+</head>
+<body>
+<div>
+    <input id="rename" type="text" placeholder="请输入要修改的名字"/>
+    <!--<button onclick="reName()">修改</button>-->
+    <input id="channelId" type="text" placeholder="请输入channelId"/>
+    <input id="message" type="text" placeholder="请输入内容"/>
+    <button onclick="wsSend()">发送</button>
+
+
+    <div id="content">
+
+    </div>
+
+    <div>
+
+    </div>
+</div>
+</body>
+</html>
